@@ -386,9 +386,7 @@
 
         }
 
-
-        async function get_account_no(tr) {
-            //function get_account_no(tr) {
+        function get_account_no(tr) {
 
 
 
@@ -443,7 +441,8 @@
                 }
 
 
-                /*fetch('/process_data', {
+
+                fetch('/process_data', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
@@ -451,101 +450,79 @@
                     body: JSON.stringify(request_data)
                 })
                     .then(response => response.json())
-                    .then(data => {*/
+                    .then(data => {
 
-                try {
-                    const response = await fetch('/process_data', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify(request_data)
+                        if (data.session) {
+                            sessionStorage.setItem('ASP.NET_SessionId', data.session['ASP.NET_SessionId'])
+                        }
+
+                        if (data.status.code === "success") {
+                            received = data[account_no];
+                            ward_no = received.ward_no;
+                            visted_arears = received.visted_arears;
+                            consumer_name = received.consumer_name;
+                            type = received.type;
+                            con = received.con;
+                            bill_ammount = received.bill_ammount;
+                            monthly_demand = received.monthly_demand;
+
+
+                            document.getElementById(id).querySelector("#ward_no").value = ward_no;
+                            document.getElementById(id).querySelector("#visted_arears").value = visted_arears;
+                            document.getElementById(id).querySelector("#consumer_name").value = consumer_name;
+                            document.getElementById(id).querySelector("#type").value = type;
+                            document.getElementById(id).querySelector("#con").value = con;
+                            document.getElementById(id).querySelector("#bill_ammount").value = bill_ammount;
+                            document.getElementById(id).querySelector("#monthly_demand").value = monthly_demand;
+
+
+                            localStorage.setItem(id, JSON.stringify(
+                                {
+                                    ward_no: received.ward_no,
+                                    visted_arears: received.visted_arears,
+                                    account_no: account_no,
+                                    consumer_name: received.consumer_name,
+                                    type: received.type,
+                                    con: received.con,
+                                    bill_ammount: received.bill_ammount,
+                                    paid: JSON.parse(localStorage.getItem(id))["paid"],
+                                    freq: JSON.parse(localStorage.getItem(id))["freq"],
+                                    def: JSON.parse(localStorage.getItem(id))["def"],
+                                    monthly_demand: received.monthly_demand,
+
+                                }))
+
+                            input_color(id, "form-control bg-white text-center text-dark");
+
+                            showAlert("Data Generated Sucessfully");
+                            setTimeout(function () {
+                                hideAlert();
+                            }, 3000);
+
+
+                        }
+                        else if (data.status.code === "error") {
+                            input_color(id, "form-control bg-white text-center text-dark");
+
+                            showAlert("Data Not Found Enter the Record Manually");
+                            setTimeout(function () {
+                                hideAlert();
+                            }, 3000);
+
+                        }
+
+
+
+                    })
+                    .catch(error => {
+                        console.error(error);
                     });
-                    const data = await response.json();
 
 
 
-
-                    if (data.session) {
-                        sessionStorage.setItem('ASP.NET_SessionId', data.session['ASP.NET_SessionId'])
-                    }
-
-                    if (data.status.code === "success") {
-                        received = data[account_no];
-                        ward_no = received.ward_no;
-                        visted_arears = received.visted_arears;
-                        consumer_name = received.consumer_name;
-                        type = received.type;
-                        con = received.con;
-                        bill_ammount = received.bill_ammount;
-                        monthly_demand = received.monthly_demand;
-
-
-                        document.getElementById(id).querySelector("#ward_no").value = ward_no;
-                        document.getElementById(id).querySelector("#visted_arears").value = visted_arears;
-                        document.getElementById(id).querySelector("#consumer_name").value = consumer_name;
-                        document.getElementById(id).querySelector("#type").value = type;
-                        document.getElementById(id).querySelector("#con").value = con;
-                        document.getElementById(id).querySelector("#bill_ammount").value = bill_ammount;
-                        document.getElementById(id).querySelector("#monthly_demand").value = monthly_demand;
-
-
-                        localStorage.setItem(id, JSON.stringify(
-                            {
-                                ward_no: received.ward_no,
-                                visted_arears: received.visted_arears,
-                                account_no: account_no,
-                                consumer_name: received.consumer_name,
-                                type: received.type,
-                                con: received.con,
-                                bill_ammount: received.bill_ammount,
-                                paid: JSON.parse(localStorage.getItem(id))["paid"],
-                                freq: JSON.parse(localStorage.getItem(id))["freq"],
-                                def: JSON.parse(localStorage.getItem(id))["def"],
-                                monthly_demand: received.monthly_demand,
-
-                            }))
-
-                        input_color(id, "form-control bg-white text-center text-dark");
-
-                        showAlert("Data Generated Sucessfully");
-                        setTimeout(function () {
-                            hideAlert();
-                        }, 3000);
-
-
-                    }
-                    else if (data.status.code === "error") {
-                        input_color(id, "form-control bg-white text-center text-dark");
-
-                        showAlert("Data Not Found Enter the Record Manually");
-                        setTimeout(function () {
-                            hideAlert();
-                        }, 3000);
-
-                    }
-
-
-
-                }
-                catch (error) {
-                    console.error(error);
-                }
             }
+
         }
-
-
-
-        /*
-            .catch (error => {
-            console.error(error);
-        });
-
-
-
-    }
-
-}*/
 
 
     </script>
