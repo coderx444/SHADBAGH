@@ -279,10 +279,6 @@ def process_data(data: Dict[Any, Any]):
 
     counter += 1
     req = extract_info(hit_account(account_no, ua, cj), cj, account_no)
-
-    import time
-
-    time.sleep(6)
     return req
 
 
