@@ -10,7 +10,6 @@
     <strong id="msg">Alert</strong>
     <button class="btn-close" type="button" onclick="hideAlert();"></button>
 </div>
-<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 
 
 <div>
@@ -441,10 +440,11 @@
 
                 }
 
-                axios.post('/process_data', request_data)
-                .then(response => {
-                    const data = response.data;
-        
+                fetch(`process_data/${JSON.stringify(request_data)}`).then(response => response.json())
+                .then(data =>{
+
+
+
 
                 /*fetch('/process_data', {
                     method: 'POST',
@@ -517,7 +517,7 @@
 
 
 
-                    })
+                   })
                     .catch(error => {
                         console.error(error);
                     });
