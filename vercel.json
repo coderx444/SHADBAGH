@@ -15,7 +15,7 @@
   "functions": {
     "app/*.py": {
       "runtime": "@vercel/python",
-      "maxDuration": 30
+      "maxDuration": 60
     }
   }
 }
