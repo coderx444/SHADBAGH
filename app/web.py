@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Request, Depends
+from fastapi import FastAPI, Request
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 import requests
@@ -9,22 +9,12 @@ import json
 from typing import Dict, Any
 from datetime import datetime
 from fastapi.staticfiles import StaticFiles
-from fastapi.middleware.cors import CORSMiddleware
+
 
 session = requests.Session()
 
 
 app = FastAPI()
-
-origins = ["*"]
-
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=origins,
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
 # app.mount("/static", StaticFiles(directory="static"), name="static")
 templates = Jinja2Templates(directory="templates")
 
@@ -259,15 +249,12 @@ ua = None
 
 counter = 1
 
-from fastapi.encoders import jsonable_encoder
-from urllib.parse import unquote
 
-
-@app.get("/process_data/{data}")
-def process_data(data):
+@app.post("/process_data")
+def process_data(data: Dict[Any, Any]):
     global ua_lst, ua, cj, counter
 
-    # data = json.dumps(data)
+    data = json.dumps(data)
     data = json.loads(data)
 
     account_no = data.get("account_no")
@@ -291,42 +278,7 @@ def process_data(data):
         ua_lst = read_user_agents(ua_path)
 
     counter += 1
-    req = extract_info(hit_account(account_no, ua, cj), cj, account_no)
-    return req
-
-
-# @app.get(data: dict = Depends(parse_dict))
-# def process_data(x):
-#     print(x)
-
-# global ua_lst, ua, cj, counter
-
-# data = json.dumps(data)
-# data = json.loads(data)
-
-# account_no = data.get("account_no")
-
-# asp = data.get("ASP.NET_SessionId")
-
-# if asp == "false" or counter >= 5:
-#     temp = generate_cookies(ua_lst)
-#     counter = 1
-
-#     cj = temp.get("ASP.NET_SessionId")
-#     ua = temp.get("ua")
-#     change_ua()
-
-# else:
-#     cj = asp
-#     ua = random.choice(ua_lst)
-#     change_ua()
-
-# if len(ua_lst) <= 50:
-#     ua_lst = read_user_agents(ua_path)
-
-# counter += 1
-# req = extract_info(hit_account(account_no, ua, cj), cj, account_no)
-# return req
+    return extract_info(hit_account(account_no, ua, cj), cj, account_no)
 
 
 @app.post("/check_duplicates")
