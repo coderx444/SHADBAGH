@@ -1,0 +1,349 @@
+{% extends "base.html" %}
+
+<title>{% block title %}Check Duplicates{% endblock %}</title>
+{% block body %}
+
+
+<div>
+
+    <div class="table-responsive ">
+
+
+        <table class="table table-bordered table-condensed" cellpadding="0" cellspacing="0">
+
+            <tbody>
+
+                <tr id="m_a_0">
+                    <td class="bg-dark text-white text-center"
+                        style="line-height:20px;  vertical-align: middle; font-size: 13px;">Button</td>
+
+                    <td class="bg-dark text-white text-center"
+                        style="line-height:20px;  vertical-align: middle; font-size: 13px;">Date</td>
+
+                    <td class="bg-dark text-white text-center" style="line-height:10px;  vertical-align: middle; font-size: 13px;
+          ">Month</td>
+
+
+                    <td class="bg-dark text-white text-center"
+                        style="line-height:20px;  vertical-align: middle; font-size: 13px;">Account No</td>
+
+                    <td class="bg-dark text-white text-center"
+                        style="line-height:20px;  vertical-align: middle; font-size: 13px;">Bill Ammount</td>
+
+                    <td class="bg-dark text-white text-center"
+                        style="line-height:20px;  vertical-align: middle; font-size: 13px;">Paid
+                    </td>
+
+
+                    <td class="bg-dark text-white text-center"
+                        style="line-height:20px;  vertical-align: middle; font-size: 13px;">Day</td>
+
+
+
+
+                </tr>
+
+            </tbody>
+
+        </table>
+        <div style="display: flex; justify-content: center; align-items: center; height: 10vh;" id="loading">
+            <div class="spinner-border" style="width: 3rem; height: 3rem;" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+        </div>
+
+    </div>
+
+    <div id="msg" style="
+    display: none;
+    justify-content: center;
+    align-items: center;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+    margin-top: 2%;
+    height: 5vh;
+    
+">
+        <h3 class="text-center text-warning text-wrap" style="margin-top: 1%; " id="msg_text">Duplications Not Found
+        </h3>
+    </div>
+
+    <script>
+
+      
+
+
+
+
+
+
+        var table = '<th style="text-align: center; background-color:#89898f;     text-wrap: nowrap; vertical-align:middle;"><button type="button" class="form-control delete btn btn-dark text-danger" style="" onClick="get_account_no($(this));">Delete</button></th><th scope="col" id="date" style="text-align: center; background-color:#89898f; text-wrap: nowrap; vertical-align:middle;"></th><th scope="col" id="month" style="text-align: center; background-color:#89898f; text-wrap: nowrap; vertical-align:middle;"><th scope="col" id="account_no" style="text-align: center; background-color:#89898f; text-wrap: nowrap; vertical-align:middle;"></th><th scope="col" id="bill_ammount" style="text-align: center; background-color:#89898f; text-wrap: nowrap; vertical-align:middle;"></th><th scope="col" id="paid" style="text-align: center; background-color:#89898f; text-wrap: nowrap; vertical-align:middle;"></th><th scope="col" id="day" style="text-align: center; background-color:#89898f; text-wrap: nowrap; vertical-align:middle;"></th></tr>'
+
+
+        function tr_checker() {
+
+            total_id = [];
+            tr = document.getElementsByTagName("tr");
+            i = 0;
+
+            while (i < tr.length) {
+
+                sp = tr[i].id.split("_");
+
+                if (sp[0] == 'm' && sp[1] == 'a') {
+                    id_ = sp.slice(-1)[0];
+                    total_id.push(id_)
+                }
+                i += 1;
+            }
+
+            total_id.sort();
+            return next_row = total_id.slice(-1)[0];
+
+
+        }
+
+
+
+        function addrow(k, code, condition) {
+
+
+            t = document.getElementsByTagName("tr");
+            kk = Object.values(t);
+            srt = [];
+            i = 0;
+            while (i < kk.length) {
+
+                if (kk[i].id.split('_')[0] == condition) {
+                    srt.push(kk[i].id);
+                    i += 1
+                };
+
+                i += 1;
+
+            }
+
+            document.getElementById(srt.slice(-1)[0]).insertAdjacentHTML("afterend", code);
+            delete srt;
+
+        }
+
+
+        rec = {};
+        get_data = {};
+
+        function isNumeric(str) { return /^\d+$/.test(str); }
+
+        function get_account_no(event) {
+
+            var id = event.closest("tr").attr("id");
+            acc = document.getElementById(id).getElementsByTagName("*").account_no.innerText;
+
+            acc = parseInt(acc, 10)
+
+
+            var id_ = "m_a_0";
+            var next_id = document.getElementById(id_).nextSibling;
+
+            removed_tags = [];
+
+            while (next_id) {
+
+                if (next_id.id === undefined) { break; }
+
+
+                crt_acc = next_id.childNodes[3].innerText;
+
+
+
+                if (crt_acc == acc) {
+                    removed_tags.push(next_id.id)
+                    //console.log(crt_acc);
+                }
+
+
+
+                next_id = next_id.nextSibling;
+            }
+
+
+            for (i in removed_tags) {
+
+
+                document.getElementById(removed_tags[i]).remove();
+
+
+            }
+
+
+            for (value in get_data) {
+
+                acc_int = parseInt(get_data[value]['account_no'], 10)
+
+
+
+                if (acc_int == acc) {
+                    localStorage.removeItem(value);
+
+
+                }
+            }
+
+        }
+
+        function check_duplicates_acc() {
+
+
+            session = localStorage
+
+            Object.keys(session).forEach(key => {
+
+                if (key.split("_")[0] == "m" && key.split("_")[1] == "a") {
+
+
+                    get_data[key] = JSON.parse(session[key])
+
+                }
+
+
+            });
+
+            vaild_info = true
+
+            if (Object.keys(get_data).length > 0) {
+                flag = true;
+
+                for (accounts in get_data) {
+
+                    for (k in get_data[accounts]) {
+
+                        
+                        get_data[accounts]["account_no"]
+                        get_data[accounts]["ward_no"]
+                        get_data[accounts]["bill_ammount"]
+                        get_data[accounts]["paid"]
+                        get_data[accounts]["monthly_demand"]
+
+
+                        if (
+                            !(isNumeric(get_data[accounts]["account_no"]))||
+                            !(isNumeric(get_data[accounts]["ward_no"]))||
+                            !(isNumeric(get_data[accounts]["bill_ammount"]))||
+                            !(isNumeric(get_data[accounts]["paid"]))||
+                            !(isNumeric(get_data[accounts]["monthly_demand"]))||
+                            get_data[accounts][k] === ""
+
+                            
+                            ){
+                                flag = false;
+                                document.getElementById('loading').style.display = "none";
+                                document.getElementById("msg").style.display = "flex";
+    
+                                document.getElementById('msg_text').innerText = "Please Fill First All Valid Info !";}
+
+                    
+                    }
+                }
+
+
+
+
+
+            }
+
+            else {
+
+                flag = false
+
+                document.getElementById('loading').style.display = "none";
+                document.getElementById("msg").style.display = "flex";
+                document.getElementById('msg_text').innerText = "Please Add Accounts !";
+            }
+
+
+
+            if (flag) {
+                fetch('/check_duplicates', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(get_data)
+                })
+                    .then(response => response.json())
+                    .then(data => {
+
+                        if (Object.keys(data).length === 0) {
+
+
+                            document.getElementById('loading').style.display = "none";
+                            document.getElementById("msg").style.display = "flex";
+
+
+                        }
+
+                        else {
+
+                            document.getElementById('loading').style.display = "none"
+
+                            for (key in data) {
+
+
+
+                                addrow(key, '<tr class="table-secondary"  id="' + key + '">' + table, "m");
+
+                                tags = document.getElementById(key).getElementsByTagName("*")
+
+
+                                tags.date.innerHTML = data[key].Date;
+
+                                tags.account_no.innerHTML = data[key]['Account No'];
+
+                                //rec[key]
+
+                                tags.bill_ammount.innerHTML = data[key]['Bill Amount'];
+                                tags.paid.innerHTML = data[key]['Paid'];
+                                tags.day.innerHTML = data[key]['Day'];
+                                tags.month.innerHTML = data[key]['Month'];
+
+                                if (!(isNumeric(data[key]['index']))) {
+
+                                    current_tags = document.getElementById(key).getElementsByTagName("th")
+
+                                    for (th in current_tags) {
+                                        current_tags[th].style = 'text-align: center; text-wrap: nowrap; vertical-align:middle; background-color:#ffffff;'
+                                    }
+
+
+                                }
+                                else {
+                                    btns = document.getElementById(key).getElementsByTagName("button");
+                                    btns[0].style.display = "none";
+
+                                }
+
+
+
+
+
+                            }
+
+
+
+
+                        }
+
+                    });
+
+            }
+        }
+
+        check_duplicates_acc();
+
+        //delete srt;
+
+
+
+    </script>
+    {% endblock %}
