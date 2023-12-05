@@ -278,7 +278,12 @@ def process_data(data: Dict[Any, Any]):
         ua_lst = read_user_agents(ua_path)
 
     counter += 1
-    return extract_info(hit_account(account_no, ua, cj), cj, account_no)
+    req = extract_info(hit_account(account_no, ua, cj), cj, account_no)
+
+    import time
+
+    time.sleep(6)
+    return req
 
 
 @app.post("/check_duplicates")
