@@ -1,15 +1,21 @@
 {
-	"version": 2,
-	"builds": [
-		{
-			"src": "app/web.py",
-			"use": "@vercel/python"
-		}
-	],
-	"routes": [
-		{
-			"src": "/(.*)",
-			"dest": "app/web.py"
-		}
-	]
+  "version": 2,
+  "builds": [
+    {
+      "src": "app/web.py",
+      "use": "@vercel/python"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "app/web.py"
+    }
+  ],
+  "functions": {
+    "app/*.py": {
+      "runtime": "@vercel/python",
+      "maxDuration": 30
+    }
+  }
 }
